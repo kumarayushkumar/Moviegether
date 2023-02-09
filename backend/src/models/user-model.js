@@ -6,9 +6,9 @@ const UserSchema = new mongoose.Schema({
         required: [true, "emailId not provided"], 
         unique: true
     },
-    userId: {
+    googleId: {
         type: String,
-        required: [true, "userId not provided"], 
+        required: [true, "googleId not provided"], 
         unique: true
     },
     firstName: {
@@ -19,6 +19,9 @@ const UserSchema = new mongoose.Schema({
         type: String, 
         required: [true, "lastName not provided"]
     },
+    movies: [{
+        type: mongoose.Schema.Types.ObjectId, ref: 'MovieModel'
+    }]
 }, { timestamps: true })
 
 export default mongoose.model('UserModel', UserSchema)

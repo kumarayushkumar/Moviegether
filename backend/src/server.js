@@ -1,46 +1,41 @@
 import dotenv from 'dotenv'
 dotenv.config()
 
+import { ApolloServer } from '@apollo/server'
+import { expressMiddleware } from '@apollo/server/express4'
+import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer'
 import express from 'express'
+import http from 'http'
+import bodyParser from 'body-parser'
 import cors from 'cors'
-import { graphqlHTTP } from 'express-graphql'
-import UserSchema from './graphql-schema/user-schema.js'
+
+import typeDefs from './graphql/typedefs.js'
+import resolvers from './graphql/resolvers/index.js'
 import connectDB from './config/db.js'
 
-const app = express()
-
-//allow cross-origin requests
-app.use(cors({
-    credentials: true,
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    origin: ['http://localhost:3000']
-}))
-
-
 // connect to database
-connectDB()
+// connectDB()
 
-//middleware
-app.use(express.json())
-
-app.use((req, res, next) => {
-
-    next()
+const app = express()
+const httpServer = http.createServer(app)
+const apolloServer = new ApolloServer({
+    typeDefs,
+    resolvers,
+    plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
 })
 
-app.use('/', graphqlHTTP({
-    schema: UserSchema,
-    pretty: true,
-    graphiql: true
-}))
+await apolloServer.start()
 
-// app.get('/', (req,res) => {
-//     res.send('hello world')
-// })
+app.use(
+    '/',
+    cors({ origin: ['http://localhost:3000'] }),
+    bodyParser.urlencoded({ extended: false }),
+    expressMiddleware(apolloServer),
+)
 
-app.listen(process.env.PORT, (req, res) => {
-    console.log(`listening on port ${process.env.PORT}`)
-    console.log(res)
-    console.log(req)
-})
-
+await new Promise((resolve) => httpServer.listen({ port: process.env.PORT }, resolve))
+    .then((resolve) => {
+        console.log(`🚀 Server ready at http://localhost:${process.env.PORT}`)
+    }).catch((err) => {
+        console.log(err)
+    })
