@@ -1,25 +1,47 @@
-import logo from './logo.svg';
+import { useEffect, useState } from "react";
+import {
+    signInWithPopup,
+    GoogleAuthProvider,
+    onAuthStateChanged,
+} from "firebase/auth";
+
 import './App.css';
+import getAuth from './config/firebase-config.js';
+import Home from './components/home.js';
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    const [auth, setAuth] = useState(false)
+    const [userToken, setUserToken] = useState(null)
+
+    useEffect(() => {
+        onAuthStateChanged(getAuth, (userCred) => {
+            if(userCred) {
+                // setUserToken()
+                setAuth(true)
+                userCred.getIdToken().then((token) => {
+                    console.log(token)
+                    setUserToken(token)
+                })
+            }
+        })
+    }, [])
+
+    const logIn = () => {
+        signInWithPopup(getAuth, new GoogleAuthProvider())
+        .then((userCred) => {
+            if(userCred) {
+                setAuth(true)
+            }
+        }).catch((error) => {
+            console.log(error)
+        });
+    }
+
+    return (
+        <div className="App">
+            { auth ? (<Home userToken = {userToken} />) : (<button onClick={logIn}>Log in with Google</button>) }
+        </div>
+    );
 }
 
 export default App;

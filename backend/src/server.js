@@ -26,10 +26,21 @@ const apolloServer = new ApolloServer({
 
 await apolloServer.start()
 
+app.use('/', (req, res) => {
+    res.send('He')
+})
+
 app.use(
-    '/',
+    '/a',
     cors({ origin: ['http://localhost:3000'] }),
     bodyParser.urlencoded({ extended: false }),
+    (_req, _res, next) => { 
+        context: async ({ req, res }) => {
+            const token = req.headers.authorization || '';
+            const user = await getUser(token);
+                return { user };
+        }
+    },
     expressMiddleware(apolloServer),
 )
 
