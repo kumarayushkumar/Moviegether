@@ -1,23 +1,19 @@
 import mongoose from "mongoose"
 
 const UserSchema = new mongoose.Schema({
+    uid: {
+        type: String,
+        required: [true, "uid not provided"], 
+        unique: true
+    },
     emailId: {
         type: String,
-        required: [true, "emailId not provided"], 
+        required: [true, "email id not provided"], 
         unique: true
     },
-    googleId: {
-        type: String,
-        required: [true, "googleId not provided"], 
-        unique: true
-    },
-    firstName: {
+    name: {
         type: String, 
-        required: [true, "firstName not provided"]
-    },
-    lastName: {
-        type: String, 
-        required: [true, "lastName not provided"]
+        required: [true, "name not provided"]
     },
     movies: [{
         type: mongoose.Schema.Types.ObjectId, ref: 'MovieModel'

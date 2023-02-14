@@ -19,7 +19,7 @@ function App() {
                 // setUserToken()
                 setAuth(true)
                 userCred.getIdToken().then((token) => {
-                    console.log(token)
+                    console.log(userCred)
                     setUserToken(token)
                 })
             }

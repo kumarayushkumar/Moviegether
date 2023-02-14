@@ -1,14 +1,9 @@
 import mongoose from "mongoose"
 
 const MovieSchema = new mongoose.Schema({
-    googleId: {
+    uid: {
         type: String,
-        required: [true, "googleId not provided"], 
-        unique: true
-    },
-    movieName: {
-        type: String,
-        required: [true, "movieName not provided"], 
+        required: [true, "uid not provided"], 
     },
     src: {
         type: String,

@@ -21,26 +21,22 @@ const httpServer = http.createServer(app)
 const apolloServer = new ApolloServer({
     typeDefs,
     resolvers,
+    introspection: true,
+    context: ({ req, res }) => ({ req, res }),
     plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
 })
 
 await apolloServer.start()
 
-app.use('/', (req, res) => {
-    res.send('He')
-})
+// app.use('/', (req, res) => {
+//     console.log(req.headers.authorization)
+//     res.send('He')
+// })
 
 app.use(
-    '/a',
+    '/',
     cors({ origin: ['http://localhost:3000'] }),
     bodyParser.urlencoded({ extended: false }),
-    (_req, _res, next) => { 
-        context: async ({ req, res }) => {
-            const token = req.headers.authorization || '';
-            const user = await getUser(token);
-                return { user };
-        }
-    },
     expressMiddleware(apolloServer),
 )
 

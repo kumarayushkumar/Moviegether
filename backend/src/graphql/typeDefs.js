@@ -1,18 +1,15 @@
 const typeDefs = `#graphql
     type User {
+        uid: String!
         emailId: String!
-        googleId: String!
-        firstName: String!
-        lastName: String!
+        name: String!
         movies:  [Movie]
-        toekn: String!
         createdAt: String!
         updatedAt: String!
     }
     
     type Movie {
-        googleId: String!
-        movietName: String!
+        uid: String!
         src: String!
         createdAt: String!
         updatedAt: String!
@@ -20,18 +17,19 @@ const typeDefs = `#graphql
 
     type Query {
         getUser: [User]
-        getMovie: [Movie]
+        getMovie(uid: String!): Movie!
     }
 
     input RegisterInput {
-        emailId: String!
-        googleId: String!
-        firstName: String!
-        lastName: String!
+        emailId: String
+        name: String
     }
 
     type Mutation {
-        register(registerInput: RegisterInput): User!
+        register(register: RegisterInput): User!
+        login(token: String!): User!
+        uploadMovie(uid: String!, src: String!): Movie! 
+        deleteMovie(id: ID!): Movie!
     }
 `
 
